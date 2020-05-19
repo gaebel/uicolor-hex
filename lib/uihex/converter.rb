@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 require 'optparse'
 require 'yaml'
+require 'uihex/version'
 
 module UIHex
     class CONVERTER
-        VERSION = '1.1.0'
         CONFIG_FILE_NAME = File.join(__dir__, '/config.yml')
         CONFIG = YAML.load_file(CONFIG_FILE_NAME)
     
@@ -42,7 +42,12 @@ module UIHex
             end
     
             parser.on("-v", "--version", "The version of the script.") do
-                puts VERSION
+                puts UIHex::VERSION
+                exit(0)
+            end
+
+            if ARGV.length == 0
+                puts parser
                 exit(0)
             end
         end.parse!
@@ -71,7 +76,9 @@ module UIHex
     
         case ARGV.first
         when COMMANDS[:CONVERT]
-            if ARGV[1]
+            if $options.length == 0 && ARGV.length == 1
+                exit(0)
+            elsif ARGV[1]
                 hex = ARGV[1].dup.to_s
                 
                 if hex.is_a?(String)
@@ -80,8 +87,6 @@ module UIHex
             elsif ARGV[1] = ''
                     STDERR.puts("Put your HEX color between colons or remove the '#'")
                     exit(false)    
-            else
-                exit(false)
             end
     
             if hex =~ /^[0-9A-F]+$/i
@@ -119,10 +124,10 @@ module UIHex
                 exit(false)
             end
         when COMMANDS[:CONFIGURE]
-            if ARGV.length < 2
-                exit(false)
+            if $options.length == 0
+                exit(0)
             end
-
+            
             if $options.key?(:floatingPoints)
                 setConfigValueFor('USES_FLOATING_POINTS', $options[:floatingPoints])
             end
