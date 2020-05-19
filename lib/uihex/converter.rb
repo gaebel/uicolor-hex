@@ -45,11 +45,6 @@ module UIHex
                 puts VERSION
                 exit(0)
             end
-    
-            if ARGV.length < 2
-                puts parser
-                exit(false)
-            end
         end.parse!
     
         def self.getConfigValueFrom(key)
@@ -82,11 +77,11 @@ module UIHex
                 if hex.is_a?(String)
                     hex.delete! '#'
                 end
-            else 
-                if ARGV[1] = ''
+            elsif ARGV[1] = ''
                     STDERR.puts("Put your HEX color between colons or remove the '#'")
                     exit(false)    
-                end
+            else
+                exit(false)
             end
     
             if hex =~ /^[0-9A-F]+$/i
@@ -124,6 +119,10 @@ module UIHex
                 exit(false)
             end
         when COMMANDS[:CONFIGURE]
+            if ARGV.length < 2
+                exit(false)
+            end
+
             if $options.key?(:floatingPoints)
                 setConfigValueFor('USES_FLOATING_POINTS', $options[:floatingPoints])
             end
